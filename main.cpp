@@ -1,74 +1,175 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <random>
+#include <algorithm>
 
 using namespace sf;
 
-class Particle : public CircleShape{
-private:
-    bool activeSelf;
+static const int WindowX = 1500;
+static const int WindowY = 800;
+
+class RandomManager {
+	std::random_device rd{};
+	std::mt19937 gen{ rd() };
+	std::uniform_int_distribution<int> color{ 0,255 };
+	std::uniform_int_distribution<int> posX{ 0, WindowX };
+	std::uniform_int_distribution<int> posY{ 0, WindowY };
 public:
-    bool getActiveState() {
-        return activeSelf;
-    }
-    void setActive(bool newState) {
-        activeSelf = newState;
-    }
+	Color getRandomColor() {
+		return Color(color(gen), color(gen), color(gen));
+	}
+	Vector2f getRandomPos() {
+		return Vector2f(posX(gen), posY(gen));
+	}
 };
 
-class ParticleSystem{
+class Particle : public CircleShape {
 private:
-    std::vector<CircleShape> particles;
-    RenderWindow *window;
-    std::mt19937 *random_engine;
-    std::uniform_int_distribution<int> *color_generator;
-    std::uniform_int_distribution<int> *pos_generator;
+	bool activeSelf;
+	static RandomManager randMgr;
+	void set() {
+		setPointCount(15);
+		setFillColor(randMgr.getRandomColor());
+		setPosition(randMgr.getRandomPos());
+		setRadius(10);
+	}
+public:
+	Particle() {
+		activeSelf = true;
+		set();
+	}
+
+	bool operator<(const Particle& other) {
+		return getPos().x < other.getPos().x;
+	}
+
+	Vector2f getPos() const {
+		Vector2f origin = getPosition();
+		int radius = getRadius();
+		return Vector2f(origin.x + radius, origin.y +  radius);
+	}
+
+	bool getActiveState() const {
+		return activeSelf;
+	}
+
+	void setActive(bool newState) {
+		activeSelf = newState;
+		if (activeSelf) {
+			set();
+		}
+	}
+};
+
+RandomManager Particle::randMgr = RandomManager();
+
+class Player : public CircleShape {
+private:
+	Vector2f pos = {450,450};
+	Vector2f graphicPos = {400,400};
+	float radius = 25;
+
+	void convertGraphicPos() {
+		graphicPos = { pos.x - radius, pos.y - radius };
+	}
 
 public:
-    ParticleSystem(RenderWindow* window, size_t size = 150):window(window) {
-        random_engine = new std::mt19937(time(NULL));
-        color_generator = new std::uniform_int_distribution<int>(0, 255);
-        pos_generator = new std::uniform_int_distribution<int>(0, 1000);
+	Player() {
+		setFillColor(Color::White);
+		setPosition(pos);
+		setRadius(radius);
+	}
 
-        particles.resize(size);
 
-        for (auto& particle : particles) {
-            particle.setPointCount(15);
-            particle.setFillColor(Color((* color_generator)(random_engine), (*color_generator)(random_engine), (*color_generator)(random_engine)));
-            particle.setPosition((*pos_generator)(random_engine), (*pos_generator)(random_engine));
-            particle.setRadius(10);
-        }
-    }
+	bool collide(const Vector2f& otherPos) const {
+		return ((pos.x - otherPos.x) * (pos.x - otherPos.x) +
+			(pos.y - otherPos.y) * (pos.y - otherPos.y) <= getRadius() * getRadius());
+	}
 
-    ~ParticleSystem() {
-        delete random_engine;
-        delete color_generator;
-        delete pos_generator;
-    }
+	void grow() {
+		radius += 10/radius;
+		setRadius(radius);
+	}
 
-    void draw() {
-        for (const auto& particle : particles) {
-            window->draw(particle);
-        }
-    }
+	void move() {
+		if (Keyboard::isKeyPressed(Keyboard::Up)
+			&& pos.y >= radius) {
+			pos.y -= 5;
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Down)
+			&& pos.y <= WindowY - radius) {
+			pos.y += 5;
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Left)
+			&& pos.x >= radius) {
+			pos.x -= 5;
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Right)
+			&& pos.x <= WindowX - radius) {
+			pos.x += 5;
+		}
+		convertGraphicPos();
+		setPosition(graphicPos);
+	}
+};
+
+class ParticleSystem {
+private:
+	std::vector<Particle> particles;
+	RenderWindow* window;
+
+public:
+	ParticleSystem(RenderWindow* window, size_t size = 150) :window(window) {
+		particles.resize(size);
+	}
+
+	~ParticleSystem() {
+
+	}
+
+	void draw() {
+		for (const auto& particle : particles) {
+			if (particle.getActiveState())
+				window->draw(particle);
+		}
+	}
+
+	void CollisionDetection(Player& player) {
+		for (auto& particle : particles) {
+			if (!particle.getActiveState()) {
+				particle.setActive(true);
+			}
+			if (player.collide(particle.getPos())) {
+				particle.setActive(false);
+				player.grow();
+			}
+		}
+	}
 };
 
 int main()
 {
-    RenderWindow *window = new RenderWindow(VideoMode(1000, 1000), "SFML works!");
-    ParticleSystem part(window,150);
-    while (window->isOpen())
-    {
-        Event event;
-        while (window->pollEvent(event))
-        {
-            if (event.type == Event::Closed)
-                window->close();
-        }
-        window->clear();
-        part.draw();
-        window->display();
-    }
+	RenderWindow* window = new RenderWindow(VideoMode(WindowX, WindowY), "SFML works!");
+	window->setFramerateLimit(144);
 
-    return 0;
+	ParticleSystem particleSystem(window, 150);
+	Player player;
+	
+	while (window->isOpen())
+	{
+		Event event;
+		while (window->pollEvent(event))
+		{
+			if (event.type == Event::Closed)
+				window->close();
+		}
+		window->clear();
+		player.move();
+		particleSystem.CollisionDetection(player);
+		window->draw(player);
+		particleSystem.draw();
+		window->display();
+	}
+
+	return 0;
 }
