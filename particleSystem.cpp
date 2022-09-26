@@ -1,7 +1,7 @@
 #include "particleSystem.h"
 #include "playerSystem.h"
 
-ParticleSystem::ParticleSystem(RenderWindow* window, size_t size) : window(window) {
+ParticleSystem::ParticleSystem(RenderWindow* window, MainPlayer* player, size_t size) : window(window), mainPlayer(player) {
 	particles.resize(size);
 }
 
@@ -12,14 +12,14 @@ void ParticleSystem::draw() {
 	}
 }
 
-void ParticleSystem::update(PlayerSystem* system) {
+void ParticleSystem::update() {
 	for (auto& particle : particles) {
 		if (!particle.getActiveState()) {
 			particle.setActive(true);
 		}
-		if (system->mainPlayer->collide(particle.getPos())) {
+		if (mainPlayer->collide(particle.getPos())) {
 			particle.setActive(false);
-			system->mainPlayer->grow();
+			mainPlayer->grow();
 		}
 	}
 }

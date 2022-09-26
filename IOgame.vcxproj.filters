@@ -19,6 +19,21 @@
     <Filter Include="리소스 파일\images">
       <UniqueIdentifier>{73cfad32-139a-4231-ae3d-66c22bab0c90}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\particle">
+      <UniqueIdentifier>{c5eba9dc-1681-4e7e-a4e5-0d816e0a352c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\particle">
+      <UniqueIdentifier>{dc8716ab-d420-4907-a897-a921673e828e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\player">
+      <UniqueIdentifier>{24ac0c17-5cd2-4a35-ad37-5d5d3e0d38fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\player">
+      <UniqueIdentifier>{1060b5ad-4e2c-45f9-ab91-2d699cee88f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="리소스 파일\sounds">
+      <UniqueIdentifier>{af8b32d6-dc40-498f-9500-ebd89b5d0ce5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -28,22 +43,19 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="particle.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="player.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\particle</Filter>
     </ClCompile>
     <ClCompile Include="particleSystem.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="playerSystem.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="client.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\particle</Filter>
     </ClCompile>
     <ClCompile Include="mainPlayer.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\player</Filter>
+    </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>소스 파일\player</Filter>
+    </ClCompile>
+    <ClCompile Include="playerSystem.cpp">
+      <Filter>소스 파일\player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -51,22 +63,19 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="particle.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="player.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\particle</Filter>
     </ClInclude>
     <ClInclude Include="particleSystem.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="playerSystem.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="client.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\particle</Filter>
     </ClInclude>
     <ClInclude Include="mainPlayer.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\player</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>헤더 파일\player</Filter>
+    </ClInclude>
+    <ClInclude Include="playerSystem.h">
+      <Filter>헤더 파일\player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -102,5 +111,10 @@
     <Image Include="images\space.jpg">
       <Filter>리소스 파일\images</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="sounds\eat.wav">
+      <Filter>리소스 파일\sounds</Filter>
+    </Media>
   </ItemGroup>
 </Project>

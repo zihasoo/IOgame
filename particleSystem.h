@@ -7,9 +7,10 @@ class ParticleSystem {
 private:
 	std::vector<Particle> particles;
 	RenderWindow* window;
-
+	MainPlayer* mainPlayer;
 public:
-	ParticleSystem(RenderWindow*, size_t = 150);
+	ParticleSystem(RenderWindow*, MainPlayer*, size_t = 150);
 	void draw();
-	void update(PlayerSystem* player);
+	void update();
 };
+ 

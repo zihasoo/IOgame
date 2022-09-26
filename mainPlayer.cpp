@@ -3,16 +3,22 @@
 
 using sf::Keyboard;
 
-MainPlayer::MainPlayer(RenderWindow* window) : window(window) {
-	view = new View(pos, viewSize);
+MainPlayer::MainPlayer(RenderWindow* window, string& name) : window(window),playerName(name) {
+	buffer = new SoundBuffer;
+	buffer->loadFromFile("sounds/eat.wav");
+	sound = new Sound(*buffer);
+	view = new View(getConvertedPos(), viewSize);
 	window->setView(*view);
 }
 
 MainPlayer::~MainPlayer() {
+	delete sound;
+	delete buffer;
 	delete view;
 }
 
 bool MainPlayer::collide(const Vector2f& otherPos) const {
+	Vector2f&& pos = getConvertedPos();
 	return ((pos.x - otherPos.x) * (pos.x - otherPos.x) +
 		(pos.y - otherPos.y) * (pos.y - otherPos.y) <= radius * radius);
 }
@@ -23,9 +29,11 @@ void MainPlayer::grow() {
 	viewSize.y += 75.0f / radius;
 	setRadius(radius);
 	view->setSize(viewSize);
+	sound->play();
 }
 
 void MainPlayer::move() {
+	Vector2f&& pos = getConvertedPos();
 	if (Keyboard::isKeyPressed(Keyboard::Up)
 		&& pos.y >= radius / 2) {
 		pos.y -= speed;
@@ -42,8 +50,11 @@ void MainPlayer::move() {
 		&& pos.x <= System::MapX - radius / 2) {
 		pos.x += speed;
 	}
-	convertGraphicPos();
-	setPosition(graphicPos);
+	setPosition(pos.x - radius, pos.y - radius);
 	view->setCenter(pos);
 	window->setView(*view);
+}
+
+string MainPlayer::getPlayerName() {
+	return playerName;
 }
