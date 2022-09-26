@@ -1,15 +1,15 @@
 #include "particle.h"
 #include "system.h"
 
-void Particle::set() {
-	setFillColor(System::getRandomColor());
-	setPosition(System::getRandomPos());
-}
-
 Particle::Particle() {
 	setPointCount(10);
 	setRadius(10);
 	setActive(true);
+}
+
+void Particle::set() {
+	setFillColor(System::getRandomColor());
+	setPosition(System::getRandomPos());
 }
 
 Vector2f Particle::getPos() const {

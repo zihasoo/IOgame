@@ -4,6 +4,9 @@
 
 using sf::Color;
 using sf::Vector2f;
+using sf::Clock;
+using sf::RenderWindow;
+using sf::VideoMode;
 using std::mt19937;
 using std::random_device;
 using uni = std::uniform_int_distribution<int>;
@@ -14,15 +17,24 @@ private:
 	static uni color;
 	static uni posX;
 	static uni posY;
-	static Color Colors[8];
-public:
-	static const int WindowX = 1500;
-	static const int WindowY = 800;
+	static Clock clock;
+	enum class ScreenMode
+	{
+		FullScreen,
+		FloatScreen
+	};
+	static ScreenMode curentScreenMode;
 
-	static const int MapX = 6000;
-	static const int MapY = 3200;
+public:
+	static const int WindowX = 1440;
+	static const int WindowY = 810;
+
+	static const int MapX = 3840;
+	static const int MapY = 2160;
 
 	static void printFPS();
+	static void changeScreenMode(RenderWindow*);
+	static bool buttonCoolDown();
 	static Color getRandomColor();
 	static Vector2f getRandomPos();
 };

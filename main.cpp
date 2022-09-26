@@ -1,110 +1,16 @@
 #include <iostream>
-#include <vector>
-#include <random>
-#include <algorithm>
 #include "system.h"
-#include "particle.h"
+#include "particleSystem.h"
+#include "playerSystem.h"
+#include "mainPlayer.h"
+#include "client.h"
 
+using sf::Texture;
+using sf::Sprite;
+using sf::Event;
+using sf::Keyboard;
 
-class Player : public CircleShape {
-private:
-	Vector2f pos = {450,450};
-	Vector2f graphicPos = {400,400};
-	Vector2f viewSize = {600,320};
-	float radius = 20;
-	float speed = 4;
-	RenderWindow* window;
-	View* view;
-
-	void convertGraphicPos() {
-		graphicPos = { pos.x - radius, pos.y - radius };
-	}
-
-public:
-	Player(RenderWindow* window) : window(window) {
-		view = new View(pos,viewSize);
-		window->setView(*view);
-		setFillColor(Color::White);
-		setPosition(pos);
-		setRadius(radius);
-	}
-
-	~Player() {
-		delete view;
-	}
-
-	bool collide(const Vector2f& otherPos) const {
-		return ((pos.x - otherPos.x) * (pos.x - otherPos.x) +
-			(pos.y - otherPos.y) * (pos.y - otherPos.y) <= radius * radius);
-	}
-
-	void draw() {
-		window->draw(*this);
-	}
-
-	void grow() {
-		radius += 15 / radius;
-		viewSize.x += 75.0f * 15 / 8 / radius;
-		viewSize.y += 75.0f / radius;
-		setRadius(radius);
-		view->setSize(viewSize);
-	}
-
-	void move() {
-		if (Keyboard::isKeyPressed(Keyboard::Up)
-			&& pos.y >= radius) {
-			pos.y -= speed;
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Down)
-			&& pos.y <= System::MapY - radius) {
-			pos.y += speed;
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Left)
-			&& pos.x >= radius) {
-			pos.x -= speed;
-		}
-		if (Keyboard::isKeyPressed(Keyboard::Right)
-			&& pos.x <= System::MapX - radius) {
-			pos.x += speed;
-		}
-		convertGraphicPos();
-		setPosition(graphicPos);
-		view->setCenter(pos);
-		window->setView(*view);
-	}
-};
-
-class ParticleSystem {
-private:
-	std::vector<Particle> particles;
-	RenderWindow* window;
-
-public:
-	ParticleSystem(RenderWindow* window, size_t size = 150) :window(window) {
-		particles.resize(size);
-	}
-
-	void draw() {
-		for (const auto& particle : particles) {
-			if (particle.getActiveState())
-				window->draw(particle);
-		}
-	}
-
-	void update(Player* player) {
-		for (auto& particle : particles) {
-			if (!particle.getActiveState()) {
-				particle.setActive(true);
-			}
-			else if (player->collide(particle.getPos())) {
-				particle.setActive(false);
-				player->grow();
-			}
-		}
-	}
-};
-
-void play() {
+void play(PlayMode playmode) {
 	RenderWindow* window = new RenderWindow(VideoMode(System::WindowX, System::WindowY), "IO Game!");
 	window->setFramerateLimit(60);
 
@@ -113,7 +19,7 @@ void play() {
 	Sprite* sprite = new Sprite(*texture);
 
 	ParticleSystem particleSystem(window, 1500);
-	Player* player = new Player(window);
+	PlayerSystem playerSystem(window, playmode);
 
 	Event event;
 
@@ -128,13 +34,14 @@ void play() {
 		window->clear();
 		window->draw(*sprite);
 
-		if (Keyboard::isKeyPressed(Keyboard::Space)) {
-			for (int i = 0; i < 100; i++) player->grow();
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && System::buttonCoolDown()) {
+			System::changeScreenMode(window);
 		}
 
-		player->move();
-		particleSystem.update(player);
-		player->draw();
+		
+		playerSystem.update();
+		particleSystem.update(&playerSystem);
+		playerSystem.draw();
 		particleSystem.draw();
 
 		window->display();
@@ -142,12 +49,31 @@ void play() {
 
 	delete texture;
 	delete sprite;
-	delete player;
 	delete window;
+}
+
+PlayMode start() {
+	
+again:
+	std::cout << "호스트 하기: 1, 접속하기: 2\n입력: ";
+	char input;
+	std::cin >> input;
+
+	switch (input)
+	{
+	case '1':
+		return PlayMode::host;
+	case '2':
+		return PlayMode::client;
+	default:
+		std::cout << "잘못된 입력입니다.\n";
+		goto again;
+		break;
+	}
 }
 
 int main()
 {
-	play();
+	play(start());
 	return 0;
 }

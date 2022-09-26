@@ -20,11 +20,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mainPlayer.cpp" />
     <ClCompile Include="particle.cpp" />
+    <ClCompile Include="particleSystem.cpp" />
+    <ClCompile Include="player.cpp" />
+    <ClCompile Include="playerSystem.cpp" />
+    <ClCompile Include="client.cpp" />
     <ClCompile Include="system.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mainPlayer.h" />
     <ClInclude Include="particle.h" />
+    <ClInclude Include="particleSystem.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="playerSystem.h" />
+    <ClInclude Include="client.h" />
     <ClInclude Include="system.h" />
   </ItemGroup>
   <ItemGroup>
