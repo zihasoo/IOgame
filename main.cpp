@@ -1,115 +1,76 @@
-#include <SFML/Graphics.hpp>
+#include <iostream>
 #include <vector>
 #include <random>
 #include <algorithm>
+#include "system.h"
+#include "particle.h"
 
-using namespace sf;
-
-static const int WindowX = 1500;
-static const int WindowY = 800;
-
-class RandomManager {
-	std::random_device rd{};
-	std::mt19937 gen{ rd() };
-	std::uniform_int_distribution<int> color{ 0,255 };
-	std::uniform_int_distribution<int> posX{ 0, WindowX };
-	std::uniform_int_distribution<int> posY{ 0, WindowY };
-public:
-	Color getRandomColor() {
-		return Color(color(gen), color(gen), color(gen));
-	}
-	Vector2f getRandomPos() {
-		return Vector2f(posX(gen), posY(gen));
-	}
-};
-
-class Particle : public CircleShape {
-private:
-	bool activeSelf;
-	static RandomManager randMgr;
-	void set() {
-		setPointCount(15);
-		setFillColor(randMgr.getRandomColor());
-		setPosition(randMgr.getRandomPos());
-		setRadius(10);
-	}
-public:
-	Particle() {
-		activeSelf = true;
-		set();
-	}
-
-	bool operator<(const Particle& other) {
-		return getPos().x < other.getPos().x;
-	}
-
-	Vector2f getPos() const {
-		Vector2f origin = getPosition();
-		int radius = getRadius();
-		return Vector2f(origin.x + radius, origin.y +  radius);
-	}
-
-	bool getActiveState() const {
-		return activeSelf;
-	}
-
-	void setActive(bool newState) {
-		activeSelf = newState;
-		if (activeSelf) {
-			set();
-		}
-	}
-};
-
-RandomManager Particle::randMgr = RandomManager();
 
 class Player : public CircleShape {
 private:
 	Vector2f pos = {450,450};
 	Vector2f graphicPos = {400,400};
-	float radius = 25;
+	Vector2f viewSize = {600,320};
+	float radius = 20;
+	float speed = 4;
+	RenderWindow* window;
+	View* view;
 
 	void convertGraphicPos() {
 		graphicPos = { pos.x - radius, pos.y - radius };
 	}
 
 public:
-	Player() {
+	Player(RenderWindow* window) : window(window) {
+		view = new View(pos,viewSize);
+		window->setView(*view);
 		setFillColor(Color::White);
 		setPosition(pos);
 		setRadius(radius);
 	}
 
+	~Player() {
+		delete view;
+	}
 
 	bool collide(const Vector2f& otherPos) const {
 		return ((pos.x - otherPos.x) * (pos.x - otherPos.x) +
-			(pos.y - otherPos.y) * (pos.y - otherPos.y) <= getRadius() * getRadius());
+			(pos.y - otherPos.y) * (pos.y - otherPos.y) <= radius * radius);
+	}
+
+	void draw() {
+		window->draw(*this);
 	}
 
 	void grow() {
-		radius += 10/radius;
+		radius += 15 / radius;
+		viewSize.x += 75.0f * 15 / 8 / radius;
+		viewSize.y += 75.0f / radius;
 		setRadius(radius);
+		view->setSize(viewSize);
 	}
 
 	void move() {
 		if (Keyboard::isKeyPressed(Keyboard::Up)
 			&& pos.y >= radius) {
-			pos.y -= 5;
+			pos.y -= speed;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Down)
-			&& pos.y <= WindowY - radius) {
-			pos.y += 5;
+			&& pos.y <= System::MapY - radius) {
+			pos.y += speed;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Left)
 			&& pos.x >= radius) {
-			pos.x -= 5;
+			pos.x -= speed;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Right)
-			&& pos.x <= WindowX - radius) {
-			pos.x += 5;
+			&& pos.x <= System::MapX - radius) {
+			pos.x += speed;
 		}
 		convertGraphicPos();
 		setPosition(graphicPos);
+		view->setCenter(pos);
+		window->setView(*view);
 	}
 };
 
@@ -123,10 +84,6 @@ public:
 		particles.resize(size);
 	}
 
-	~ParticleSystem() {
-
-	}
-
 	void draw() {
 		for (const auto& particle : particles) {
 			if (particle.getActiveState())
@@ -134,42 +91,63 @@ public:
 		}
 	}
 
-	void CollisionDetection(Player& player) {
+	void update(Player* player) {
 		for (auto& particle : particles) {
 			if (!particle.getActiveState()) {
 				particle.setActive(true);
 			}
-			if (player.collide(particle.getPos())) {
+			else if (player->collide(particle.getPos())) {
 				particle.setActive(false);
-				player.grow();
+				player->grow();
 			}
 		}
 	}
 };
 
-int main()
-{
-	RenderWindow* window = new RenderWindow(VideoMode(WindowX, WindowY), "SFML works!");
-	window->setFramerateLimit(144);
+void play() {
+	RenderWindow* window = new RenderWindow(VideoMode(System::WindowX, System::WindowY), "IO Game!");
+	window->setFramerateLimit(60);
 
-	ParticleSystem particleSystem(window, 150);
-	Player player;
-	
+	Texture* texture = new Texture;
+	texture->loadFromFile("images/space.jpg");
+	Sprite* sprite = new Sprite(*texture);
+
+	ParticleSystem particleSystem(window, 1500);
+	Player* player = new Player(window);
+
+	Event event;
+
 	while (window->isOpen())
 	{
-		Event event;
+		System::printFPS();
 		while (window->pollEvent(event))
 		{
 			if (event.type == Event::Closed)
 				window->close();
 		}
 		window->clear();
-		player.move();
-		particleSystem.CollisionDetection(player);
-		window->draw(player);
+		window->draw(*sprite);
+
+		if (Keyboard::isKeyPressed(Keyboard::Space)) {
+			for (int i = 0; i < 100; i++) player->grow();
+		}
+
+		player->move();
+		particleSystem.update(player);
+		player->draw();
 		particleSystem.draw();
+
 		window->display();
 	}
 
+	delete texture;
+	delete sprite;
+	delete player;
+	delete window;
+}
+
+int main()
+{
+	play();
 	return 0;
 }

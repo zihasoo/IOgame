@@ -20,6 +20,26 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="particle.cpp" />
+    <ClCompile Include="system.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="particle.h" />
+    <ClInclude Include="system.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\Pretendard-Black.ttf" />
+    <Font Include="fonts\Pretendard-Bold.ttf" />
+    <Font Include="fonts\Pretendard-ExtraBold.ttf" />
+    <Font Include="fonts\Pretendard-ExtraLight.ttf" />
+    <Font Include="fonts\Pretendard-Light.ttf" />
+    <Font Include="fonts\Pretendard-Medium.ttf" />
+    <Font Include="fonts\Pretendard-Regular.ttf" />
+    <Font Include="fonts\Pretendard-SemiBold.ttf" />
+    <Font Include="fonts\Pretendard-Thin.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\space.jpg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

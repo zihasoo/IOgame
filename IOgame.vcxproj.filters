@@ -13,10 +13,64 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="리소스 파일\fonts">
+      <UniqueIdentifier>{96ff8ce6-81fb-4974-a6df-df3d1233bcd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="리소스 파일\images">
+      <UniqueIdentifier>{73cfad32-139a-4231-ae3d-66c22bab0c90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="system.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="particle.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="system.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\Pretendard-Black.ttf">
+      <Filter>리소스 파일\fonts</Filter>
+    </Font>
+    <Font Include="fonts\Pretendard-Bold.ttf">
+      <Filter>리소스 파일\fonts</Filter>
+    </Font>
+    <Font Include="fonts\Pretendard-ExtraBold.ttf">
+      <Filter>리소스 파일\fonts</Filter>
+    </Font>
+    <Font Include="fonts\Pretendard-ExtraLight.ttf">
+      <Filter>리소스 파일\fonts</Filter>
+    </Font>
+    <Font Include="fonts\Pretendard-Light.ttf">
+      <Filter>리소스 파일\fonts</Filter>
+    </Font>
+    <Font Include="fonts\Pretendard-Medium.ttf">
+      <Filter>리소스 파일\fonts</Filter>
+    </Font>
+    <Font Include="fonts\Pretendard-Regular.ttf">
+      <Filter>리소스 파일\fonts</Filter>
+    </Font>
+    <Font Include="fonts\Pretendard-SemiBold.ttf">
+      <Filter>리소스 파일\fonts</Filter>
+    </Font>
+    <Font Include="fonts\Pretendard-Thin.ttf">
+      <Filter>리소스 파일\fonts</Filter>
+    </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\space.jpg">
+      <Filter>리소스 파일\images</Filter>
+    </Image>
   </ItemGroup>
 </Project>
