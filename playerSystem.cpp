@@ -11,7 +11,7 @@ PlayerSystem::PlayerSystem(RenderWindow* window, MainPlayer* player, PlayMode pl
 	font.loadFromFile("fonts/Pretendard-Regular.ttf");
 
 	if (playmode == PlayMode::host) {
-
+		clients = new TcpSocket[acceptableClientCount];
 		cout << "연결 대기 중\n";
 		if (listener.listen(port) != sf::Socket::Done) {
 			cout << "연결 안됨\n";
@@ -20,11 +20,13 @@ PlayerSystem::PlayerSystem(RenderWindow* window, MainPlayer* player, PlayMode pl
 		cout << "포트 리슨 완료\n";
 		
 		thread t1(&PlayerSystem::accept, this);
+		thread t2(&PlayerSystem::transmissionClients, this);
 		t1.detach();
-
+		t2.detach();
 	}
 
 	else {
+		clients = nullptr;
 		do
 		{
 			cout << "연결 시도 중\n";
@@ -48,12 +50,19 @@ PlayerSystem::PlayerSystem(RenderWindow* window, MainPlayer* player, PlayMode pl
 	}
 }
 
+PlayerSystem::~PlayerSystem() {
+	if(clients != nullptr)
+		delete[] clients;
+}
+
 void PlayerSystem::draw() {
 	window->draw(*mainPlayer);
 	for (const auto& player : players)
 	{
+		Text nickname(String(player.first), font);
+		nickname.setPosition(player.second.getConvertedPos());
 		window->draw(player.second);
-		window->draw(Text(String(player.first), font));
+		window->draw(nickname);
 	}
 }
 
@@ -62,16 +71,24 @@ void PlayerSystem::accept() {
 	string name;
 	float x, y;
 	float radius;
-	cout << "클라이언트 대기 중\n";
-	if (listener.accept(clients.back()) != sf::Socket::Done) {
-		cout << "클라이언트 연결 실패\n";
-		exit(1);
-	}
-	cout << "-----연결 완료-----\n";
+	int clientIdx = 0;
+	while (clientIdx < acceptableClientCount)
+	{
+		cout << "클라이언트 대기 중\n";
 
-	clients.back().receive(data);
-	data >> name >> x >> y >> radius;
-	players[name] = Player(x, y, radius);
+		if (listener.accept(clients[clientIdx]) != sf::Socket::Done) {
+			cout << "클라이언트 연결 실패\n";
+			exit(1);
+		}
+		cout << "-----연결 완료-----\n";
+		
+
+		clients[clientIdx].receive(data); //초기 위치 세팅
+		data >> name >> x >> y >> radius;
+		players[name] = Player(x, y, radius);
+
+		clientIdx++;
+	}
 }
 
 void PlayerSystem::receiveHost() {
@@ -117,24 +134,38 @@ void PlayerSystem::sendHost() {
 	}
 }
 
-void PlayerSystem::receiveClients()
+void PlayerSystem::transmissionClients()
 {
 	Vector2f pos;
-	Packet data;
+	string name;
+	float x, y, radius;
+	Packet receiveData, sendData;
 	while (true)
 	{
-
-		data.clear();
-		pos = mainPlayer->getPosition();
-
-		if (host.receive(data) != sf::Socket::Done) {
-			std::cout << "클라이언트의 접속이 종료되었습니다.\n";
+		sendData.clear();
+		//data receive
+		for (int i = 0; i < players.size(); i++) {
+			if (clients[i].receive(receiveData) != sf::Socket::Done) {
+				std::cout << "클라이언트의 접속이 종료되었습니다.\n";
+				//exit(1);
+			}
+			sendData.append(receiveData.getData(), receiveData.getDataSize());
 		}
-
+		pos = mainPlayer->getPosition();
+		sendData << mainPlayer->getPlayerName() << pos.x << pos.y << mainPlayer->getRadius();
+		//combine and send data
+		for (int i = 0; i < players.size(); i++) {
+			if (clients[i].send(sendData) != sf::Socket::Done) {
+				std::cout << "클라이언트의 접속이 종료되었습니다.\n";
+				//exit(1);
+			}
+		}
+		for (int i = 0; i < players.size() + 1; i++)
+		{
+			sendData >> name >> x >> y >> radius;
+			players[name].setPosition(x, y);
+			players[name].setRadius(radius);
+		}
 	}
 }
 
-void PlayerSystem::sendClients()
-{
-
-}

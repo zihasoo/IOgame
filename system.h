@@ -26,8 +26,8 @@ private:
 	static ScreenMode curentScreenMode;
 
 public:
-	static const int WindowX = 1440;
-	static const int WindowY = 810;
+	static const int WindowX = 720; //1440
+	static const int WindowY = 405; //810
 
 	static const int MapX = 3840;
 	static const int MapY = 2160;

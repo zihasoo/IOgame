@@ -9,9 +9,8 @@ using sf::Vector2f;
 class Player : public CircleShape {
 protected:
 	float radius = 20;
-	Vector2f getConvertedPos() const;
-
 public:
+	Vector2f getConvertedPos() const;
 	Player();
 	Player(float, float, float);
 };
