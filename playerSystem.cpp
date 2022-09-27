@@ -11,16 +11,36 @@ PlayerSystem::PlayerSystem(RenderWindow* window, MainPlayer* player, PlayMode pl
 	font.loadFromFile("fonts/Pretendard-Regular.ttf");
 
 	if (playmode == PlayMode::host) {
-		
-	}
-	else {
 
+		cout << "연결 대기 중\n";
+		if (listener.listen(port) != sf::Socket::Done) {
+			cout << "연결 안됨\n";
+			exit(1); //포트를 변경하는 로직 필요
+		}
+		cout << "포트 리슨 완료\n";
+		
+		thread t1(&PlayerSystem::accept, this);
+		t1.detach();
+
+	}
+
+	else {
 		do
 		{
 			cout << "연결 시도 중\n";
 		} while (host.connect(ip, port) != sf::Socket::Done);
 
 		cout << "-----연결 완료-----\n";
+
+		Vector2f pos = mainPlayer->getPosition();
+		Packet data;
+		data << mainPlayer->getPlayerName() << pos.x << pos.y << mainPlayer->getRadius();
+
+		if (host.send(data) != sf::Socket::Done) {
+			std::cout << "호스트의 접속이 종료되었습니다.\n";
+			exit(1);
+		}
+
 		thread t1(&PlayerSystem::receiveHost, this);
 		thread t2(&PlayerSystem::sendHost, this);
 		t1.detach();
@@ -37,8 +57,21 @@ void PlayerSystem::draw() {
 	}
 }
 
-void PlayerSystem::listen() {
+void PlayerSystem::accept() {
+	Packet data;
+	string name;
+	float x, y;
+	float radius;
+	cout << "클라이언트 대기 중\n";
+	if (listener.accept(clients.back()) != sf::Socket::Done) {
+		cout << "클라이언트 연결 실패\n";
+		exit(1);
+	}
+	cout << "-----연결 완료-----\n";
 
+	clients.back().receive(data);
+	data >> name >> x >> y >> radius;
+	players[name] = Player(x, y, radius);
 }
 
 void PlayerSystem::receiveHost() {
@@ -54,9 +87,10 @@ void PlayerSystem::receiveHost() {
 			exit(1);
 		}
 
-		for (int i = 0; i < players.size(); i++)
+		for (int i = 0; i < players.size()+1; i++)
 		{
 			data >> name >> x >> y >> radius;
+			if (name == mainPlayer->getPlayerName()) continue;
 			players[name].setPosition(x, y);
 			players[name].setRadius(radius);
 		}
@@ -74,14 +108,33 @@ void PlayerSystem::sendHost() {
 			data.clear();
 			pos = mainPlayer->getPosition();
 			data << mainPlayer->getPlayerName() << pos.x << pos.y << mainPlayer->getRadius();
+
+			if (host.send(data) != sf::Socket::Done) {
+				std::cout << "호스트의 접속이 종료되었습니다.\n";
+				exit(1);
+			}
 		}
 	}
 }
 
 void PlayerSystem::receiveClients()
 {
+	Vector2f pos;
+	Packet data;
+	while (true)
+	{
+
+		data.clear();
+		pos = mainPlayer->getPosition();
+
+		if (host.receive(data) != sf::Socket::Done) {
+			std::cout << "클라이언트의 접속이 종료되었습니다.\n";
+		}
+
+	}
 }
 
 void PlayerSystem::sendClients()
 {
+
 }

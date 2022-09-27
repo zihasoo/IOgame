@@ -30,7 +30,7 @@ void play() {
 
 	while (window->isOpen())
 	{
-		System::printFPS();
+		//System::printFPS();
 		while (window->pollEvent(event))
 		{
 			if (event.type == Event::Closed)
@@ -42,9 +42,9 @@ void play() {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && System::buttonCoolDown()) {
 			System::changeScreenMode(window);
 		}
-		//if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-		//	for (int i = 0; i < 100; i++) mainplayer->grow();
-		//}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+			for (int i = 0; i < 100; i++) mainplayer->grow();
+		}
 
 		mainplayer->move();
 

@@ -13,4 +13,5 @@ protected:
 
 public:
 	Player();
+	Player(float, float, float);
 };

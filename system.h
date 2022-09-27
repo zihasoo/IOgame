@@ -35,6 +35,7 @@ public:
 	static void printFPS();
 	static void changeScreenMode(RenderWindow*);
 	static bool buttonCoolDown();
+	static bool soundCoolDown();
 	static Color getRandomColor();
 	static Vector2f getRandomPos();
 };

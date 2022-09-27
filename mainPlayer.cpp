@@ -29,7 +29,9 @@ void MainPlayer::grow() {
 	viewSize.y += 75.0f / radius;
 	setRadius(radius);
 	view->setSize(viewSize);
-	sound->play();
+	if (System::soundCoolDown()) {
+		sound->play();
+	}
 }
 
 void MainPlayer::move() {

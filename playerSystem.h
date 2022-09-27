@@ -11,6 +11,7 @@ using std::thread;
 
 using sf::IpAddress;
 using sf::TcpSocket;
+using sf::TcpListener;
 using sf::Packet;
 using sf::RenderWindow;
 using sf::Font;
@@ -32,9 +33,10 @@ class PlayerSystem
 
 	MainPlayer* mainPlayer;
 	TcpSocket host;
-	std::vector<TcpSocket> clients;
+	TcpListener listener;
+	std::vector<TcpSocket> clients{1};
 
-	void listen();
+	void accept();
 
 public:
 	PlayerSystem(RenderWindow*, MainPlayer*, PlayMode);

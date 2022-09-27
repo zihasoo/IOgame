@@ -3,11 +3,11 @@
 #include <iostream>
 
 void System::printFPS() {
-	static Clock FPSclock;
-	static int count = 0;
+	static int lastPrintTime = 0, count = 0;
 	count++;
-	if (FPSclock.getElapsedTime().asMilliseconds() >= 1000) {
-		FPSclock.restart();
+	int curTime = clock.getElapsedTime().asMilliseconds();
+	if (curTime - lastPrintTime >= 1000) {
+		lastPrintTime = curTime;
 		std::cout << "FPS: " << count << '\n';
 		count = 0;
 	}
@@ -35,10 +35,20 @@ void System::changeScreenMode(RenderWindow *window) {
 }
 
 bool System::buttonCoolDown() {
-	static int lastButtonPressedTime = 0, PressCool = 1000;
+	static int lastButtonPressedTime = 0;
 	int curTime = clock.getElapsedTime().asMilliseconds();
-	if ((curTime - lastButtonPressedTime) > PressCool) {
+	if ((curTime - lastButtonPressedTime) > 1000) { //1s
 		lastButtonPressedTime = curTime;
+		return true;
+	}
+	return false;
+}
+
+bool System::soundCoolDown() {
+	static int lastSoundPlayedTime = 0;
+	int curTime = clock.getElapsedTime().asMilliseconds();
+	if ((curTime - lastSoundPlayedTime) > 50) { //0.05s
+		lastSoundPlayedTime = curTime;
 		return true;
 	}
 	return false;
