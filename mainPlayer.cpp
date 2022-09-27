@@ -4,6 +4,7 @@
 using sf::Keyboard;
 
 MainPlayer::MainPlayer(RenderWindow* window, string& name) : window(window),playerName(name) {
+	setPosition(System::getRandomPos());
 	buffer = new SoundBuffer;
 	buffer->loadFromFile("sounds/eat.wav");
 	sound = new Sound(*buffer);
@@ -35,7 +36,7 @@ void MainPlayer::grow() {
 }
 
 void MainPlayer::move() {
-	Vector2f&& pos = getConvertedPos();
+	Vector2f pos = getConvertedPos();
 	if (Keyboard::isKeyPressed(Keyboard::Up)
 		&& pos.y >= radius / 2) {
 		pos.y -= speed;

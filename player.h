@@ -11,6 +11,6 @@ protected:
 	float radius = 20;
 public:
 	Vector2f getConvertedPos() const;
-	Player();
 	Player(float, float, float);
+	Player();
 };

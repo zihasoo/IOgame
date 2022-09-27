@@ -15,6 +15,7 @@ using sf::TcpListener;
 using sf::Packet;
 using sf::RenderWindow;
 using sf::Font;
+using sf::Text;
 
 enum class PlayMode
 {
@@ -24,14 +25,15 @@ enum class PlayMode
 
 class PlayerSystem
 {
-	std::unordered_map <std::string, Player> players;
+	std::unordered_map <std::string, Player> players{};
 	RenderWindow* window;
 
 	Font font;
-	IpAddress ip = IpAddress::getLocalAddress();
+	IpAddress ip = IpAddress::getLocalAddress(); //IpAddress("192.168.0.78");
 	unsigned short port = 53000;
 
 	MainPlayer* mainPlayer;
+	Text mainPlayerNickName;
 
 	TcpSocket host; //클라이언트로 게임을 할 경우 호스트와 통신을 위해 사용
 

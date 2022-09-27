@@ -1,9 +1,9 @@
 #include "player.h"
 #include "system.h"
+#include <iostream>
 
 Player::Player(){
 	setFillColor(System::getRandomColor());
-	setPosition(System::getRandomPos());
 	setRadius(radius);
 }
 
