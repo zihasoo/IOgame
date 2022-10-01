@@ -3,13 +3,13 @@
 
 using sf::Keyboard;
 
-MainPlayer::MainPlayer(RenderWindow* window, string& name) : window(window),playerName(name) {
+MainPlayer::MainPlayer(RenderWindow& window, string& name) : window(window),playerName(name) {
 	setPosition(System::getRandomPos());
 	buffer = new SoundBuffer;
 	buffer->loadFromFile("sounds/eat.wav");
 	sound = new Sound(*buffer);
 	view = new View(getConvertedPos(), viewSize);
-	window->setView(*view);
+	window.setView(*view);
 }
 
 MainPlayer::~MainPlayer() {
@@ -55,7 +55,7 @@ void MainPlayer::move() {
 	}
 	setPosition(pos.x - radius, pos.y - radius);
 	view->setCenter(pos);
-	window->setView(*view);
+	window.setView(*view);
 }
 
 string MainPlayer::getPlayerName() {

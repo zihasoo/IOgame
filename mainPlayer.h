@@ -13,7 +13,7 @@ class MainPlayer : public Player
 {
 	Vector2f viewSize = { 480,270 };
 	float speed = 4;
-	RenderWindow* window;
+	RenderWindow& window;
 	View* view;
 	string playerName;
 	
@@ -21,7 +21,7 @@ class MainPlayer : public Player
 	Sound* sound;
 
 public:
-	MainPlayer(RenderWindow*,string&);
+	MainPlayer(RenderWindow&,string&);
 	~MainPlayer();
 	bool collide(const Vector2f& otherPos) const;
 	void grow();

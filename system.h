@@ -33,7 +33,7 @@ public:
 	static const int MapY = 2160;
 
 	static void printFPS();
-	static void changeScreenMode(RenderWindow*);
+	static void changeScreenMode(RenderWindow&);
 	static bool buttonCoolDown();
 	static bool soundCoolDown();
 	static Color getRandomColor();

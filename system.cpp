@@ -21,15 +21,15 @@ Vector2f System::getRandomPos() {
 	return Vector2f(posX(gen), posY(gen));
 }
 
-void System::changeScreenMode(RenderWindow *window) {
+void System::changeScreenMode(RenderWindow& window) {
 	if (curentScreenMode == ScreenMode::FullScreen) {
-		window->create(VideoMode(System::WindowX, System::WindowY), "IO Game!");
-		window->setFramerateLimit(60);
+		window.create(VideoMode(System::WindowX, System::WindowY), "IO Game!");
+		window.setFramerateLimit(60);
 		curentScreenMode = ScreenMode::FloatScreen;
 	}
 	else {
-		window->create(VideoMode::getDesktopMode(), "IO Game!", sf::Style::Fullscreen);
-		window->setFramerateLimit(60);
+		window.create(VideoMode::getDesktopMode(), "IO Game!", sf::Style::Fullscreen);
+		window.setFramerateLimit(60);
 		curentScreenMode = ScreenMode::FullScreen;
 	}
 }
