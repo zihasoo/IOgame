@@ -68,7 +68,7 @@ stringPlayModePair start() {
 
 again:
 
-	std::cout << "호스트 하기: 1, 접속하기: 2\n입력: ";
+	cout << "호스트 하기: 1, 접속하기: 2\n입력: ";
 	char input;
 	cin >> input;
 
@@ -81,7 +81,7 @@ again:
 		init.second = PlayMode::client;
 		break;
 	default:
-		std::cout << "잘못된 입력입니다.\n";
+		cout << "잘못된 입력입니다.\n";
 		goto again;
 	}
 	

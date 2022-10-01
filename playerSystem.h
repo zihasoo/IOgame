@@ -13,6 +13,7 @@ using std::unordered_map;
 using std::thread;
 using std::unique_ptr;
 using std::make_unique;
+using std::move;
 
 using sf::IpAddress;
 using sf::TcpSocket;
@@ -45,7 +46,7 @@ class PlayerSystem
 	unique_ptr<TcpSocket> host; //클라이언트로 게임을 할 경우 호스트와 통신을 위해 사용
 
 	unique_ptr<TcpListener> listener; //호스트로 게임을 할 경우 새로운 클라이언트를 accept하기 위해 사용
-	list<TcpSocket> clients{}; //호스트로 게임을 할 경우 클라이언트들과 통신을 위해 사용
+	list<unique_ptr<TcpSocket>> clients{}; //호스트로 게임을 할 경우 클라이언트들과 통신을 위해 사용
 
 	const int acceptableClientCount = 10;
 	int curClientCount = 0;

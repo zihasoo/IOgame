@@ -67,12 +67,13 @@ void PlayerSystem::accept() {
 	while (curClientCount< acceptableClientCount)
 	{
 		cout << "클라이언트 대기 중\n";
-		clients.emplace_back();
-		if (listener->accept(clients.back()) != sf::Socket::Done) {
+		TcpSocket *newClient = new TcpSocket;
+		if (listener->accept(*newClient) != sf::Socket::Done) {
 			cout << "클라이언트 연결 실패\n";
 			exit(1);
 		}
 		cout << "-----연결 완료-----\n";
+		clients.emplace_back(newClient);
 		curClientCount++;
 	}
 }
@@ -131,7 +132,7 @@ void PlayerSystem::transmissionClients()
 		sendData.clear();
 		//data receive and combine
 		for (auto& client : clients) {
-			if (client.receive(receiveData) != sf::Socket::Done) {
+			if (client->receive(receiveData) != sf::Socket::Done) {
 				std::cout << "클라이언트의 접속이 종료되었습니다.\n";
 				exit(1);
 			}
@@ -147,7 +148,7 @@ void PlayerSystem::transmissionClients()
 
 		//send data
 		for (auto& client : clients) {
-			if (client.send(sendData) != sf::Socket::Done) {
+			if (client->send(sendData) != sf::Socket::Done) {
 				std::cout << "클라이언트의 접속이 종료되었습니다.\n";
 				exit(1);
 			}
