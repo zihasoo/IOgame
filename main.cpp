@@ -10,54 +10,17 @@ using sf::Event;
 using sf::Keyboard;
 using std::cin;
 using std::cout;
-using stringPlayModePair = std::pair<string, PlayMode>;
+using initpr = std::pair<string, PlayMode>;
 
 RenderWindow window = RenderWindow(VideoMode(System::WindowX, System::WindowY), "IO Game!");
 Event event;
 
-void play(stringPlayModePair init) {
+initpr start() {
+	System::defaultFont.loadFromFile("fonts/Pretendard-Regular.ttf");
 	window.setFramerateLimit(60);
 
-	unique_ptr<Texture> texture = make_unique<Texture>();
-	texture->loadFromFile("images/space.jpg");
-	unique_ptr<Sprite> sprite = make_unique<Sprite>(*texture);
-
-	MainPlayer mainplayer(window, init.first);
-	ParticleSystem particleSystem(window, mainplayer, 1500);
-	PlayerSystem playerSystem(window, mainplayer, init.second);
-
-	while (window.isOpen())
-	{
-		//System::printFPS();
-		while (window.pollEvent(event))
-		{
-			if (event.type == Event::Closed)
-				window.close();
-		}
-		window.clear();
-		window.draw(*sprite);
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) && System::buttonCoolDown()) {
-			System::changeScreenMode(window);
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-			for (int i = 0; i < 100; i++) mainplayer.grow();
-		}
-
-		mainplayer.move();
-
-		particleSystem.update();
-
-		playerSystem.draw();
-		particleSystem.draw();
-
-		window.display();
-	}
-}
-
-stringPlayModePair start() {
 	char x = '\0';
-	stringPlayModePair init;
+	initpr init;
 	while (x != 'y')
 	{
 		cout << "닉네임 입력: ";
@@ -90,6 +53,41 @@ again:
 
 int main()
 {
-	play(start());
+#ifdef DEBUG
+	System::defaultFont.loadFromFile("fonts/Pretendard-Regular.ttf");
+	window.setFramerateLimit(60);
+	initpr init = { "client",PlayMode::client };
+#else
+	initpr init = start();
+#endif // DEBUG
+
+	unique_ptr<Texture> texture = make_unique<Texture>();
+	texture->loadFromFile("images/space.jpg");
+	unique_ptr<Sprite> sprite = make_unique<Sprite>(*texture);
+
+	MainPlayer mainplayer(window, init.first);
+	ParticleSystem particleSystem(window, mainplayer, 1500);
+	PlayerSystem playerSystem(window, mainplayer, init.second);
+
+	while (window.isOpen())
+	{
+		//System::printFPS();
+		while (window.pollEvent(event))
+		{
+			if (event.type == Event::Closed)
+				window.close();
+		}
+		window.clear();
+		window.draw(*sprite);
+
+		mainplayer.move();
+
+		particleSystem.update();
+
+		playerSystem.draw();
+		particleSystem.draw();
+
+		window.display();
+	}
 	return 0;
 }

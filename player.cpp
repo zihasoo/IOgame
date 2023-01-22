@@ -2,18 +2,34 @@
 #include "system.h"
 #include <iostream>
 
-Player::Player(){
-	setFillColor(System::getRandomColor());
-	setRadius(radius);
+Player::Player(string name) {
+	playerImage.setFillColor(System::getRandomColor());
+
+	playerNameText.setCharacterSize(20);
+	playerNameText.setString(name);
+	playerNameText.setFont(System::defaultFont);
 }
 
-Player::Player(float x, float y, float radius) : radius(radius) {
-	setFillColor(System::getRandomColor());
-	setPosition(x,y);
-	setRadius(radius);
-}
-
-Vector2f Player::getConvertedPos() const{
-	Vector2f graphicPos = getPosition();
+Vector2f Player::getConvertedPos() const {
+	Vector2f graphicPos = playerImage.getPosition();
 	return { graphicPos.x + radius, graphicPos.y + radius };
+}
+
+void Player::draw(RenderWindow& window) {
+	window.draw(playerImage);
+	window.draw(playerNameText);
+}
+
+void Player::setPosition(int x, int y) {
+	playerNameText.setPosition(x, y);
+	playerImage.setPosition(x, y);
+}
+
+void Player::setRadius(int radius) {
+	playerNameText.setCharacterSize(radius);
+	playerImage.setRadius(radius);
+}
+
+string Player::getPlayerName() {
+	return playerNameText.getString();
 }

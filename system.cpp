@@ -21,19 +21,6 @@ Vector2f System::getRandomPos() {
 	return Vector2f(posX(gen), posY(gen));
 }
 
-void System::changeScreenMode(RenderWindow& window) {
-	if (curentScreenMode == ScreenMode::FullScreen) {
-		window.create(VideoMode(System::WindowX, System::WindowY), "IO Game!");
-		window.setFramerateLimit(60);
-		curentScreenMode = ScreenMode::FloatScreen;
-	}
-	else {
-		window.create(VideoMode::getDesktopMode(), "IO Game!", sf::Style::Fullscreen);
-		window.setFramerateLimit(60);
-		curentScreenMode = ScreenMode::FullScreen;
-	}
-}
-
 bool System::buttonCoolDown() {
 	static int lastButtonPressedTime = 0;
 	int curTime = clock.getElapsedTime().asMilliseconds();
@@ -59,4 +46,4 @@ uni System::color = uni(0, 255);
 uni System::posX = uni(0, System::MapX);
 uni System::posY = uni(0, System::MapY);
 Clock System::clock = Clock();
-System::ScreenMode System::curentScreenMode = System::ScreenMode::FloatScreen;
+Font System::defaultFont = Font{};

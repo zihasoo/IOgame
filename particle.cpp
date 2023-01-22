@@ -15,7 +15,7 @@ void Particle::set() {
 Vector2f Particle::getPos() const {
 	Vector2f origin = getPosition();
 	int radius = getRadius();
-	return Vector2f(origin.x + radius, origin.y + radius);
+	return { origin.x + radius, origin.y + radius };
 }
 
 bool Particle::getActiveState() const {

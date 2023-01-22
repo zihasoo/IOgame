@@ -3,23 +3,24 @@
 
 using sf::Keyboard;
 
-MainPlayer::MainPlayer(RenderWindow& window, string& name) : window(window),playerName(name) {
-	setPosition(System::getRandomPos());
+MainPlayer::MainPlayer(RenderWindow& window, string& name) : Player(name), window(window) {
+	playerImage.setRadius(20);
+	playerImage.setPosition(System::getRandomPos());
+
 	buffer = new SoundBuffer;
 	buffer->loadFromFile("sounds/eat.wav");
 	sound = new Sound(*buffer);
-	view = new View(getConvertedPos(), viewSize);
-	window.setView(*view);
+	view = View(getConvertedPos(), viewSize);
+	window.setView(view);
 }
 
 MainPlayer::~MainPlayer() {
 	delete sound;
 	delete buffer;
-	delete view;
 }
 
 bool MainPlayer::collide(const Vector2f& otherPos) const {
-	Vector2f&& pos = getConvertedPos();
+	Vector2f pos = getConvertedPos();
 	return ((pos.x - otherPos.x) * (pos.x - otherPos.x) +
 		(pos.y - otherPos.y) * (pos.y - otherPos.y) <= radius * radius);
 }
@@ -29,7 +30,7 @@ void MainPlayer::grow() {
 	viewSize.x += 75.0f * 16 / 9 / radius;
 	viewSize.y += 75.0f / radius;
 	setRadius(radius);
-	view->setSize(viewSize);
+	view.setSize(viewSize);
 	if (System::soundCoolDown()) {
 		sound->play();
 	}
@@ -54,10 +55,6 @@ void MainPlayer::move() {
 		pos.x += speed;
 	}
 	setPosition(pos.x - radius, pos.y - radius);
-	view->setCenter(pos);
-	window.setView(*view);
-}
-
-string MainPlayer::getPlayerName() {
-	return playerName;
+	view.setCenter(pos);
+	window.setView(view);
 }
